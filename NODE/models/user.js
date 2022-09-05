@@ -102,9 +102,7 @@ userSchema.methods.deleteUser = function(token, cb) {
     var user = this;
 
     jwt.verify(token, config.SECRET, function(err, decode) {
-        console.log(decode,'e');
         user.findByIdAndRemove(decode)
-        console.log(decode,'2e');
     })
 }
 
