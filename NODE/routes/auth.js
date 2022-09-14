@@ -5,10 +5,8 @@ const { check, validationResult } = require('express-validator');
 
 router.post("/register",
     [
-        check('firstname')
-        .not()
-        .isEmpty()
-        .withMessage('First Name must be atleast 3 characters long'),
+        check('firstname','First Name is Required').not().isEmpty(),
+		check('lastname','Last Name is Required').not().isEmpty(),
         check('email', 'Email is required').not().isEmpty(),
         check('password', 'Password should be between 3 to 9 characters long')
         .not()
@@ -25,21 +23,18 @@ router.post("/register",
 
         const newuser = new User(req.body);
 		res.set('Access-Control-Allow-Origin', 'http://localhost:4200');
-        if(newuser.password != req.body.password2)
-        {
-            return res.status(400).json({success : false, message : "password not match"});
+        if (newuser.password != req.body.password2) {
+            return res.status(400).json({success : false, message : "Password doesn't match"});
         }
 
         User.findOne({email: newuser.email}, function(err, user) {
 
-            if(user)
-            {
-                return res.status(400).json({ success : false, message : "email already exits"});
+            if (user) {
+                return res.status(400).json({ success : false, message : "Email already exits"});
             }
 
             newuser.save((err) => {
-                if(err)
-                {
+                if (err) {
                     console.log(err);
                     return res.status(400).json({ success : false});
                 }
@@ -57,7 +52,6 @@ router.post("/register",
 
 router.post("/login", (req, res) => {
     try {
-
         let token;
         if (req.headers.authorization) {
             token = req.headers.authorization.split(" ")[1];
@@ -75,20 +69,19 @@ router.post("/login", (req, res) => {
                 });
             } else {
                 User.findOne({'email' : req.body.email}, function(err, user) {
-                    if(!user) {
+                    if (!user) {
                         return res.json({success : false, message : "Auth failed ,email not found"});
                     }
 
                     user.comparepassword(req.body.password, (err, isMatch) => {
                         if(!isMatch)
                         {
-                            return res.json({ success : false, message : "password doesn't match"});
+                            return res.json({ success : false, message : "Password is wrong"});
                         }
 
                         user.generateToken((err, user) => {
 
-                            if(err)
-                            {
+                            if (err) {
                                 return res.status(400).send(err);
                             }
 
@@ -110,7 +103,7 @@ router.post("/login", (req, res) => {
             success :true,
             message:err
         });
-    }
+}
 });
 
 module.exports = router;

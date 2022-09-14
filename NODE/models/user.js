@@ -27,7 +27,6 @@ const userSchema = mongoose.Schema({
     password:{
         type:String,
         required: true,
-        minlength:8
     },
     token:{
         type: String
@@ -41,9 +40,9 @@ const userSchema = mongoose.Schema({
 userSchema.pre('save', function(next) {
     var user = this;
 
-    if(user.isModified('password')){
+    if (user.isModified('password')) {
         bcrypt.genSalt(salt, function(err, salt) {
-            if(err) return next(err);
+            if (err) return next(err);
 
             bcrypt.hash(user.password, salt, function(err, hash) {
                 if(err) return next(err);
@@ -102,7 +101,9 @@ userSchema.methods.deleteUser = function(token, cb) {
     var user = this;
 
     jwt.verify(token, config.SECRET, function(err, decode) {
+
         user.findByIdAndRemove(decode)
+
     })
 }
 
